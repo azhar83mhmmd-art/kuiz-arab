@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Arab Premium - Soft UI Auto Send</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS untuk Tampilan Premium (Soft UI / Neumorphism) */
+        :root {
+            --primary-color: #007bff; /* Biru dingin */
+            --secondary-color: #3f51b5; /* Ungu gelap */
+            --background-color: #ecf0f3; /* Latar belakang lembut */
+            --card-background: #ecf0f3; 
+            --correct-color: #28a745;
+            --wrong-color: #azhardc3545;
+            --font-family: 'Montserrat', sans-serif;
+            --shadow-light: -7px -7px 20px rgba(255, 255, 255, 1), 7px 7px 20px rgba(0, 0, 0, 0.1);
+            --shadow-inset: inset 2px 2px 5px #babecc, inset -5px -5px 10px #ffffff;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--background-color);
+            margin: 0;
+            padding: 40px 20px;
+            color: #555;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-background);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-light);
+        }
+
+        h1 {
+            color: var(--secondary-color);
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 30px;
+            font-weight: 600;
+        }
+
+        /* Tombol */
+        .btn {
+            background-color: var(--background-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 14px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease-in-out;
+            margin: 10px 5px 10px 0;
+            font-weight: 600;
+            box-shadow: var(--shadow-light);
+            outline: none;
+        }
+
+        .btn:hover:not(:disabled) {
+            box-shadow: var(--shadow-inset);
+            color: var(--primary-color);
+        }
+        
+        .btn:disabled {
+            color: #aaa;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn-kirim {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        .btn-kirim:hover:not(:disabled) {
+            background-color: var(--primary-color);
+            box-shadow: var(--shadow-inset);
+            color: white;
+        }
+
+        /* Input */
+        input[type="text"] {
+            width: 95%;
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            border: none;
+            border-radius: 10px;
+            box-shadow: var(--shadow-inset);
+            background: var(--background-color);
+            font-size: 16px;
+            color: #555;
+            outline: none;
+        }
+
+        /* Opsi Jawaban */
+        .options-group label {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: var(--shadow-light);
+            background: var(--background-color);
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .options-group label:hover {
+            box-shadow: var(--shadow-inset);
+            color: var(--primary-color);
+        }
+
+        .options-group input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.1);
+        }
+        
+        /* Tampilan Feedback */
+        .feedback {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.05em;
+            box-shadow: var(--shadow-light);
+        }
+
+        .correct {
+            background-color: #e8ffe8;
+            color: var(--correct-color);
+            border: 2px solid var(--correct-color);
+        }
+
+        .wrong {
+            background-color: #ffe8e8;
+            color: var(--wrong-color);
+            border: 2px solid var(--wrong-color);
+        }
+
+        /* Tampilan Hasil */
+        .result-score {
+            font-size: 4.5em;
+            font-weight: 700;
+            text-align: center;
+            padding: 20px;
+            background: var(--background-color);
+            border-radius: 50%;
+            width: 160px;
+            height: 160px;
+            line-height: 120px;
+            margin: 30px auto;
+            box-shadow: var(--shadow-light);
+            color: var(--correct-color);
+        }
+        
+        .result-score.low {
+            color: var(--wrong-color);
+        }
+        
+        /* Tabel Hasil */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            font-size: 0.95em;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+        }
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        /* Hide/Show Sections */
+        #quiz-start, #quiz-setup, #quiz-container, #quiz-results {
+            display: none;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>⚜️ KUIS BAHASA ARAB ⚜️</h1>
+    <p style="text-align: center; color: var(--secondary-color); font-weight: 600;">Simulasi Ujian: Kosakata dan Ekspresi Waktu</p>
+
+    <div id="quiz-start">
+        <h2>👋 Data Peserta</h2>
+        <label for="userName" style="font-weight: 600;">Nama Lengkap:</label>
+        <input type="text" id="userName" placeholder="Contoh: Ahmad Fauzan..." required>
+        <label for="userClass" style="font-weight: 600;">Kelas/Kelompok:</label>
+        <input type="text" id="userClass" placeholder="Contoh: XII IPA 2 / Kelompok B..." required>
+        <button class="btn" onclick="startSetup()">Lanjut ke Pilihan Mode</button>
+    </div>
+
+    <div id="quiz-setup">
+        <h2>🎯 Pilih Mode Simulasi</h2>
+        <p style="color: #666;">Silakan tentukan bagaimana Anda ingin mengerjakan kuis ini:</p>
+        <button class="btn" onclick="startQuiz('Latihan')">📚 Mode Latihan (Koreksi instan)</button>
+        <button class="btn btn-secondary" onclick="startQuiz('Ujian')">🏅 Mode Ujian (Hasil di akhir)</button>
+    </div>
+
+    <div id="quiz-container">
+        <h2>Soal <span id="current-question-number"></span> dari 16</h2>
+        
+        <div id="question-area">
+            </div>
+        
+        <div id="feedback-area">
+            </div>
+        
+        <button class="btn" id="next-button" onclick="nextQuestion()" disabled style="width: 100%; margin-top: 25px;">Soal Berikutnya ➡️</button>
+    </div>
+
+    <div id="quiz-results">
+        <div class="results">
+            <h2>🏆 Laporan Hasil Ujian</h2>
+            <p><strong>Peserta:</strong> <span id="result-name" style="font-weight: 700; color: var(--primary-color);"></span></p>
+            <p><strong>Mode:</strong> <span id="result-mode"></span></p>
+            
+            <div class="result-score" id="final-score-display"></div>
+            <p style="text-align: center; font-weight: 700; font-size: 1.2em;" id="result-message"></p>
+
+            <h3 style="color: #333;">Detail Koreksi Jawaban</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Jawaban Anda</th>
+                        <th>Kunci</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="result-detail-body">
+                    </tbody>
+            </table>
+            
+            <h3 style="margin-top: 30px;">✉️ Status Pengiriman Hasil</h3>
+            <button class="btn btn-kirim" onclick="sendResult()">Kirim Ulang Hasil (Otomatis)</button>
+            <p id="email-status" style="margin-top: 10px;">Status: Menunggu pengiriman otomatis...</p>
+            
+            <button class="btn" style="margin-top: 20px;" onclick="location.reload()">🔄 Mulai Ujian Baru</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- DATA SOAL DAN KUNCI JAWABAN (1-16) ---
+    const quizData = [
+        { q: "Pilih terjemahan yang tepat untuk kalimat: 'Tadi sore dia pergi ke perpustakaan'", options: ["ذَهَبَ قَبْلَ الظُهْرِ إِلَى المَكْتَبَةِ", "ذَهَبَ بَعْدَ الظُهْرِ إِلَى المَكْتَبَةِ", "ذَهَبَ بَعْدَ العَصْرِ إِلَى المَكْتَبَةِ", "ذَهَبَ قَبْلَ العَصْرِ إِلَى المَكْتَبَةِ"], answerKey: "A" },
+        { q: "Gambar jam menunjukkan pukul 02:00. Pilihan yang tepat adalah...", options: ["السَّاعَةُ الثَّالِثَةُ", "السَّاعَةُ الرَّابِعَةُ", "السَّاعَةُ الثَّانِيَةُ", "السَّاعَةُ الوَاحِدَةُ"], answerKey: "C", hasImage: true },
+        { q: "Terjemahan yang tepat untuk kalimat: 'Kami belajar bahasa Arab selama satu jam' adalah...", options: ["نَدْرُسُ اللُغَةَ الْعَرَبِيَّةَ مَتَى؟", "نَدْرُسُ اللُغَةَ الْعَرَبِيَّةَ لَيْلًا", "نَدْرُسُ اللُغَةَ الْعَرَبِيَّةَ سَاعَةً", "نَدْرُسُ اللُغَةَ الْعَرَبِيَّةَ أَيْنَا"], answerKey: "C" },
+        { q: "Pertanyaan yang tepat untuk jawaban: 'نَعَمْ، عِنْدِي مَوْعِدٌ لِلسِّبَاحَةِ بَعْدَ الظُّهْرِ' adalah...", options: ["أَيْنَ تَذْهَبُ الْيَوْمَ؟", "مَاذَا تَفْعَلُ بَعْدَ الظُّهْرِ؟", "هَلْ عِنْدَكَ مَوْعِدٌ لِلسِّبَاحَةِ بَعْدَ الظُّهْرِ؟", "مَتَى تَسْبَحُ؟"], answerKey: "C" },
+        { q: "Makna dari 'نِصْفُ السَّاعَةِ' adalah...", options: ["Seperempat jam", "Setengah jam", "Tiga perempat jam", "Satu jam penuh"], answerKey: "B" },
+        { q: "Lengkapi kalimat ini: 'أَنَا أُصَلِّي ___ الْفَجْرِ فِي الْمَسْجِدِ'", options: ["قَبْلَ", "بَعْدَ", "فِي", "سَاعَةَ"], answerKey: "C" },
+        { q: "Frasa yang benar untuk '25 menit' dalam Bahasa Arab adalah...", options: ["خَمْسٌ وَعِشْرُونَ دَقِيْقَةً", "خَمْسَةٌ وَعِشْرُونَ دَقِيْقَةً", "عِشْرُونَ وَخَمْسُ دَقَائِقَ", "خَمْسٌ وَعِشْرُونَ دَقِيْقَةً"], answerKey: "D" },
+        { q: "Kata yang tepat untuk melengkapi kalimat 'السَّاعَةُ الْعَاشِرَةُ وَ ___' (pukul 10.30) adalah...", options: ["الرُّبْعُ", "الثُّلُثُ", "الدَّقِيْقَةُ", "النِّصْفُ"], answerKey: "D" },
+        { q: "Terjemahan yang paling sesuai untuk 'مِنْ قِبَلُ' adalah...", options: ["Sebelum itu", "Hari ini", "Sesudah itu", "Besok"], answerKey: "B" },
+        { q: "Arti dari kalimat 'السَّاعَةُ الثَّالِثَةُ إِلَّا خَمْسُ دَقَائِقَ صَبَاحًا' adalah...", options: ["Pukul 03.05 pagi", "Pukul 03.55 pagi", "Pukul 02.55 pagi", "Pukul 03.00 pagi"], answerKey: "B" },
+        { q: "'يَرْجِعُ الطُّلَّابُ إلَى بِيُوْتِهِمْ فِي السَّاعَةِ الوَاحِدَةِ والنِّصْفِ نَهَارًا' artinya...", options: ["Para siswa kembali ke rumah mereka pukul 01.30 malam.", "Para siswa kembali ke rumah mereka pukul 01.30 siang.", "Para siswa kembali ke rumah mereka pukul 02.30 siang.", "Para siswa kembali ke rumah mereka pukul 11.30 siang."], answerKey: "C" },
+        { q: "Terjemahan yang tepat untuk 'Pukul 11.00 tepat' adalah...", options: ["السَّاعَةُ الثَّانِيَةَ عَشْرَةَ", "السَّاعَةُ الْوَاحِدَةُ", "السَّاعَةُ الْحَادِيَةَ عَشْرَةَ", "السَّاعَةُ الثَّالِثَةَ عَشْرَةَ"], answerKey: "C" },
+        { q: "Kata tanya yang tepat untuk menanyakan waktu adalah...", options: ["مَتَى", "مَاذَا", "أَيْنَ", "هَلْ"], answerKey: "A" },
+        { q: "Terjemahan yang tepat untuk 'Pukul 07.45 malam' adalah...", options: ["السَّاعَةُ السَّابِعَةُ وَالنِّصْفُ مَسَاءً", "السَّاعَةُ الثَّامِنَةُ إِلَّا الرُّبْعَ صَبَاحًا", "السَّاعَةُ السَّابِعَةُ وَالرُّبْعُ مَسَاءً", "السَّاعَةُ الثَّامِنَةُ إِلَّا الرُّبْعَ مَسَاءً"], answerKey: "D" },
+        { q: "Makna dari 'مَتَى سَتَكُوْنُ سَافِرًا إِلَى جَاكَرْتَا؟' adalah...", options: ["Kapan kamu akan pulang ke Jakarta?", "Kapan kamu akan datang dari Jakarta?", "Kapan kamu akan pergi dari Jakarta?", "Kapan kamu akan bepergian ke Jakarta?"], answerKey: "A" },
+        { q: "Terjemahan yang tepat untuk 'Kurang lima belas menit' adalah...", options: ["إِلَّا عَشْرُ دَقَائِقَ", "إِلَّا نِصْفُ السَّاعَةِ", "إِلَّا رُبْعُ السَّاعَةِ", "إِلَّا ثُلْثُ السَّاعَةِ"], answerKey: "C" }
+    ];
+    // --- END DATA SOAL ---
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let quizMode = '';
+    let userName = '';
+    let userClass = '';
+    let userAnswers = [];
+    const answerLabels = ["A", "B", "C", "D"];
+    const totalQuestions = quizData.length;
+
+    // --- FUNGSI UTAMA KUIS ---
+    
+    // Fungsi untuk pindah dari Start Screen ke Setup Mode
+    function startSetup() {
+        userName = document.getElementById('userName').value.trim();
+        userClass = document.getElementById('userClass').value.trim();
+
+        if (userName === "" || userClass === "") {
+            alert("Nama dan Kelas harus diisi sebelum melanjutkan.");
+            return;
+        }
+
+        document.getElementById('quiz-start').style.display = 'none';
+        document.getElementById('quiz-setup').style.display = 'block';
+    }
+
+    // Fungsi untuk memulai Kuis setelah memilih mode
+    function startQuiz(mode) {
+        quizMode = mode;
+        document.getElementById('quiz-setup').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (currentQuestionIndex >= totalQuestions) {
+            showResults();
+            return;
+        }
+
+        const qData = quizData[currentQuestionIndex];
+        const questionArea = document.getElementById('question-area');
+        const feedbackArea = document.getElementById('feedback-area');
+        
+        document.getElementById('current-question-number').textContent = currentQuestionIndex + 1;
+        feedbackArea.innerHTML = '';
+        document.getElementById('next-button').disabled = true;
+        
+        if (currentQuestionIndex === totalQuestions - 1) {
+            document.getElementById('next-button').innerHTML = 'Selesai & Lihat Hasil 🏆';
+        } else {
+            document.getElementById('next-button').innerHTML = 'Soal Berikutnya ➡️';
+        }
+
+        let optionsHtml = '';
+        qData.options.forEach((option, index) => {
+            const isChecked = userAnswers[currentQuestionIndex] === answerLabels[index];
+            optionsHtml += `
+                <label>
+                    <input type="radio" name="question-${currentQuestionIndex}" value="${answerLabels[index]}" onchange="checkAnswer(this.value)" ${isChecked ? 'checked' : ''}>
+                    ${answerLabels[index]}. ${option}
+                </label>
+            `;
+        });
+        
+        const imageHtml = qData.hasImage ? 
+            '<img src="jam 10.jpg" class="clock-image">' : '';
+        
+        questionArea.innerHTML = `
+            <p style="font-size: 1.2em; font-weight: 600; margin-top: 10px;">${currentQuestionIndex + 1}. ${qData.q}</p>
+            ${imageHtml}
+            <div class="options-group">
+                ${optionsHtml}
+            </div>
+        `;
+        
+        if (quizMode === 'Latihan' && userAnswers[currentQuestionIndex]) {
+             checkAnswer(userAnswers[currentQuestionIndex], true);
+             document.querySelectorAll(`input[name="question-${currentQuestionIndex}"]`).forEach(input => {
+                input.disabled = true;
+            });
+        }
+        
+        if (userAnswers[currentQuestionIndex]) {
+            document.getElementById('next-button').disabled = false;
+        }
+    }
+
+    function checkAnswer(selectedOption, reload = false) {
+        const qData = quizData[currentQuestionIndex];
+        const feedbackArea = document.getElementById('feedback-area');
+        const isCorrect = selectedOption === qData.answerKey;
+        
+        if (!reload) {
+            userAnswers[currentQuestionIndex] = selectedOption;
+        }
+
+        document.getElementById('next-button').disabled = false;
+
+        if (quizMode === 'Latihan') {
+            document.querySelectorAll(`input[name="question-${currentQuestionIndex}"]`).forEach(input => {
+                input.disabled = true;
+                if (input.value === qData.answerKey) {
+                    input.parentElement.style.boxShadow = '0 0 10px var(--correct-color)';
+                    input.parentElement.style.background = '#e8ffe8';
+                }
+            });
+
+            if (isCorrect) {
+                if (!reload) score++;
+                feedbackArea.innerHTML = `<div class="feedback correct">✅ Selamat! Jawaban Anda Benar!</div>`;
+            } else {
+                feedbackArea.innerHTML = `
+                    <div class="feedback wrong">❌ Maaf, Jawaban Anda Salah.</div>
+                    <div class="rationale">Kunci Jawaban yang benar adalah **${qData.answerKey}**. Silakan pelajari kembali.</div>
+                `;
+            }
+        }
+    }
+
+    function nextQuestion() {
+        if (!userAnswers[currentQuestionIndex]) {
+             alert("Silakan pilih salah satu jawaban sebelum melanjutkan.");
+             return;
+        }
+        
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+    
+    // --- FUNGSI KIRIM EMAIL OTOMATIS ---
+    function sendResult() {
+        // GANTI INI dengan alamat Gmail Anda yang sebenarnya!
+        const TARGET_EMAIL = 'riskigeam@gmail.com'; 
+        
+        const statusEl = document.getElementById('email-status');
+        const sendButton = document.querySelector('.btn-kirim');
+        
+        const finalScore = document.getElementById('final-score-display').textContent;
+        const resultMessage = document.getElementById('result-message').textContent;
+        const tableBodyHtml = document.getElementById('result-detail-body').innerHTML;
+        
+        // Nonaktifkan tombol dan tampilkan status
+        sendButton.disabled = true;
+        statusEl.style.color = 'var(--secondary-color)';
+        statusEl.textContent = 'Mengirim hasil otomatis...';
+
+        const emailSubject = `[LAPORAN KUIS OTOMATIS] Hasil Ujian Bahasa Arab - ${userName}`;
+        
+        // Format Body Email (dalam HTML)
+        const emailBody = `
+            <strong>Peserta:</strong> ${userName} (${userClass})<br>
+            <strong>Mode Kuis:</strong> ${quizMode}<br>
+            ---<br>
+            <h2>NILAI AKHIR: ${finalScore}%</h2>
+            <strong>STATUS:</strong> ${resultMessage}<br>
+            ---<br><br>
+            <strong>Detail Koreksi Jawaban:</strong><br>
+            <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                <thead><tr><th style="background-color: #f0f0f0;">No.</th><th style="background-color: #f0f0f0;">Jawaban Anda</th><th style="background-color: #f0f0f0;">Kunci</th><th style="background-color: #f0f0f0;">Status</th></tr></thead>
+                <tbody>${tableBodyHtml}</tbody>
+            </table>
+            <br>
+            *Laporan ini dikirim otomatis saat pengguna menyelesaikan kuis via FormSubmit.*
+        `;
+
+        // PENGIRIMAN MENGGUNAKAN FORMSUBMIT
+        return fetch(`https://formsubmit.co/ajax/${TARGET_EMAIL}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                _subject: emailSubject,
+                Nama_Peserta: userName,
+                Kelas: userClass,
+                Mode: quizMode,
+                Nilai_Persentase: `${finalScore}%`,
+                Laporan_HTML: emailBody
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            sendButton.disabled = false;
+            if (data.success) {
+                statusEl.style.color = 'var(--correct-color)';
+                statusEl.textContent = `✅ Hasil berhasil dikirim otomatis ke Gmail Anda (${TARGET_EMAIL}).`;
+            } else {
+                statusEl.style.color = 'var(--wrong-color)';
+                statusEl.textContent = '❌ Gagal mengirim hasil. Pastikan FormSubmit sudah diaktifkan!';
+            }
+        })
+        .catch(error => {
+            sendButton.disabled = false;
+            statusEl.style.color = 'var(--wrong-color)';
+            statusEl.textContent = '❌ Terjadi kesalahan jaringan saat mengirim.';
+        });
+    }
+
+    // --- FUNGSI TAMPIL HASIL (INTEGRASI PENGIRIMAN DI SINI) ---
+    function showResults() {
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('quiz-results').style.display = 'block';
+
+        if (quizMode === 'Ujian') {
+            score = 0; 
+            quizData.forEach((q, index) => {
+                if (userAnswers[index] === q.answerKey) {
+                    score++;
+                }
+            });
+        }
+        
+        const finalScorePercentage = (score / totalQuestions) * 100;
+        const resultTableBody = document.getElementById('result-detail-body');
+        const finalScoreDisplay = document.getElementById('final-score-display');
+        const resultMessage = document.getElementById('result-message');
+        
+        document.getElementById('result-name').textContent = userName + ' (' + userClass + ')';
+        document.getElementById('result-mode').textContent = quizMode;
+        finalScoreDisplay.textContent = Math.round(finalScorePercentage);
+
+        // Styling dan pesan berdasarkan skor
+        finalScoreDisplay.classList.remove('low');
+        if (finalScorePercentage >= 80) {
+            finalScoreDisplay.style.color = 'var(--correct-color)';
+            resultMessage.textContent = "Fantastis! Anda Menguasai Materi dengan Sempurna!";
+        } else if (finalScorePercentage >= 60) {
+            finalScoreDisplay.style.color = '#ffc107'; 
+            resultMessage.textContent = "Bagus! Terus Tingkatkan Pemahaman Anda!";
+        } else {
+            finalScoreDisplay.classList.add('low');
+            finalScoreDisplay.style.color = 'var(--wrong-color)';
+            resultMessage.textContent = "Perlu Latihan Lebih Lanjut. Semangat!";
+        }
+        
+        resultTableBody.innerHTML = '';
+        quizData.forEach((q, index) => {
+            const userAns = userAnswers[index] || '-';
+            const statusText = userAns === q.answerKey ? 'BENAR' : 'SALAH';
+            const statusColor = userAns === q.answerKey ? 'var(--correct-color)' : 'var(--wrong-color)';
+
+            resultTableBody.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${userAns}</td>
+                    <td>${q.answerKey}</td>
+                    <td style="color: ${statusColor}; font-weight: 700;">${statusText}</td>
+                </tr>
+            `;
+        });
+        
+        // PENTING: Panggil fungsi kirim email segera setelah hasil dimuat
+        sendResult();
+    }
+
+    // Tampilkan layar awal saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('quiz-start').style.display = 'block';
+    });
+</script>
+
+</body>
+</html>
